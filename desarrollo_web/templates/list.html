@@ -1,0 +1,92 @@
+{% extends 'layout.html' %}
+
+{% load static %}
+
+<!-- Este Bloque viene del home.html el cual hereda al body.html y por ende podemos usarlo aqui -->
+{% block head %}
+    <!-- Librerias de DATATABLES por JQUERY -->
+    <link rel="stylesheet" href="{% static 'lib/datatables-1.10.20/css/dataTables.bootstrap4.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/css/responsive.bootstrap4.min.css' %}"/>
+    <script src="{% static 'lib/datatables-1.10.20/js/jquery.dataTables.js' %}"></script>
+    <script src="{% static 'lib/datatables-1.10.20/js/dataTables.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/dataTables.responsive.min.js' %}"></script>
+    <script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/responsive.bootstrap4.min.js' %}"></script>
+
+    <!-- Bloque para llamar a archivos estaticos que solo estaran dentro de la aplicacion erp -->
+    {% block head_list %}
+
+    {% endblock head_list %}
+
+{% endblock head %}
+
+{% block content %}
+    <div class="card card-primary">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-search"></i>
+                {{ title }}
+            </h3>
+        </div>
+        <div class="card-body">
+            <table class="table" id="nombre_tabla_list">  <!-- en el id es con el que conectamos las funciones JQUERY, AJAX -->
+                <thead>
+                {% block columns %}
+
+                {% endblock columns %}
+
+                </thead>
+                <tbody>
+                {% block rows %}
+
+                {% endblock rows %}
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer">
+            <a href="{{ create_url }}" class="btn btn-primary btn-flat btnTest">  <!-- dentro de class conectamos con "btnTest" hacia AJAX -->
+                <i class="fas fa-plus"></i> Nuevo Registro
+            </a>
+        </div>
+    </div>
+{% endblock content %}
+
+
+<!--Block javascript para indicar que cuando se carge la tabla se active automatiamente la configuracion de datatable,
+    pero para esto se debe agregar las librerias de datatable y agregar las rutas hacia cada archivo static-->
+{% block javascript %}
+    <script>
+        $(function () {
+
+            <!-- Funcion para hacer tablas mas dinamicas -->
+            $('#nombre_tabla_list').DataTable({
+                responsive: true, <!--Para que se vaya adaptando mi tabla al tamaño de la pagina de una forma muy PRO XD-->
+                autoWidth: false, <!--Para que respete el tamaño que yo le de a cada columna y no se auto ajuste-->
+
+                <!-- Esta parte es para cambiar el idiamo al español a la adaptacion de realiza datatable a mi tabla -->
+                <!-- mandando a llamar a la ruta de un txt donde esta el codigo&ndash;&gt;-->
+                "language": {
+                        url : '{% static 'lib/datatables-1.10.20/spanish.txt' %}'
+                    }
+            });
+
+            <!-- Funcion para obtener registro/s de BD y enviarlos con el metodo POST en formato JSON -->
+            <!-- Este codigo es para que cuando apretemos el boton al cual enlazamos a través de btnTest añadido en -->
+            <!-- el parametro de class dentro del boton, podamos usar AJAX para actualizacion asincrona del boton -->
+            $('.btnTest').on('click', function () {
+                $.ajax({
+                    url: '{% url 'erp:category_list' %}',  <!-- llama a la url que es la misma donde esta el boton-->
+                    type: 'POST',  <!-- Tipo Post porque se enviara un dato a traves de la url anterior -->
+                    data: {id: 1},  <!-- Aqui pones el dato que enviaremos -->
+                    DataType: 'json'  <!-- Le indicamos el tipo de dato que estamos enviando -->
+                }).done(function (data){ <!-- Esta Funcion o Metodo se va a ejecutar si la peticion es correcta -->
+                    console.log(data)
+                }).fail(function (jqXHR, textStatus, errorThrown){ <!-- Esta Funcion o Metodo se va a ejecutar cuando ocurre un error -->
+                    alert(textStatus + ': ' + errorThrown);
+                }).always(function (data) {
+                <!-- alert("complete");-->
+                });
+            });
+
+        });
+    </script>
+{% endblock javascript %}

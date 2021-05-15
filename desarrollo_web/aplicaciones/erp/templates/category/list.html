@@ -1,0 +1,40 @@
+{% extends 'list.html' %}
+{% load static %}
+
+{% block head_list %}
+    <!-- Llamamos la funcion para cargar los registros dentro de la tabla html con ajax para hacerlo mas rapido -->
+    <script  src="{% static 'category/js/list.js' %}"></script>
+{% endblock head_list %}
+
+{% block columns %}
+    <tr>
+        <th scope="col" style="width: 10%">Nro</th>
+        <th scope="col" style="width: 20%">Nombre</th>
+        <th scope="col" style="width: 50%">Descripción</th>
+        <th scope="col" style="width: 20%">Opciones</th>
+    </tr>
+{% endblock columns %}
+
+<!-- En este bloque interamos en todos los registros para mostrarlos en tabla html, PERO! no esta en uso porque ahora -->
+<!-- hacemos esta parta a través de funcion javascript-ajax en el archivo list de javascript -->
+{% block rows %}
+{% for c in object_list %}
+<!--<tr>-->
+<!--    <td>{{ c.id }}</td>-->
+<!--    <td>{{ c.name }}</td>-->
+<!--    <td>{{ c.desc }}</td>-->
+<!--    <td>-->
+<!--        <a href="{% url 'erp:category_update' c.id %}" class="btn btn-warning btn-flat">-->
+<!--            <i class="fas fa-edit"></i></a>  &lt;!&ndash; BTN EDIT/UPDATE &ndash;&gt;-->
+<!--        <a href="{% url 'erp:category_delete' c.id %}" class="btn btn-danger btn-flat">-->
+<!--            <i class="fas fa-trash-alt"></i></a>  &lt;!&ndash; BTN DELETED &ndash;&gt;-->
+<!--    </td>-->
+<!--</tr>-->
+{% endfor %}
+{% endblock rows %}
+
+<!-- Bloque heredado desde body.html al templates/list.html el cual tiene funciones javascript-ajax que hereda a -->
+<!-- este html, pero aqui no queremos que herede ese javascript, asi que ponemos ese block y no ponemos nada dentro -->
+{% block javascript %}
+
+{% endblock javascript %}

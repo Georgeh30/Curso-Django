@@ -1,0 +1,127 @@
+{% extends 'layout.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+    <!-- PRIMERA FORMA DE ENVIAR A TRAVÉS DE POST USANDO DJANGO, PERO SIN AGREGAR EL ATRIBUTO id="form_uno" -->
+    <!-- LA SEGUNDA FORMA SERIA AGREGANDO EL ATRIBUTO id="form_uno" PARA MANDAR A LLAMAR EL METODO AJAX -->
+    <form method="post" action="." id="form_uno">  <!-- conectamos a través del id a la funcion AJAX de hasta abajo -->
+        <div class="card card-primary">
+            <div class="card-header">
+                <h3 class="card-title">
+                    {% if action == 'add' %}
+                        <i class="fas fa-plus"></i>
+                    {% else %}
+                        <i class="fas fa-edit"></i>
+                    {% endif %}
+
+                    {{ title }}
+                </h3>
+            </div>
+            <div class="card-body">
+                {% csrf_token %}
+
+                <!-- etiqueta invisible(hidden) usada en el metodo sobreescrito post para create y update-->
+                <input type="hidden" name="action" value="{{ action }}">
+
+                <!-- PRIMERA FORMA DE MOSTRAR MENSAJE DE ERROR OBTENIENDO EL ERROR USANDO DJANGO -->
+                <!-- Mensaje Error color rojo -->
+                {% if form.errors %}  <!-- Si detecta un error entra -->
+                    <div class="alert alert-danger alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                        <h5><i class="icon fas fa-ban"></i> Ha ocurrido un Error al querer guardar el registro</h5>
+                        <ul>
+                            <!-- Interando para obtener el/los error/es al agregar un registro nuevo -->
+                            {% for field in form %}  <!-- obtenemos cada campo del formulario -->
+                                {% for error in field.errors %}  <!-- y verificamos uno por uno para ver si ocurrio un error -->
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+                <!-- /Fin de Mensaje de error -->
+                <!-- /FIN DE LA PRIMERA FORMA USANDO DJANGO -->
+
+                <!-- Hace la interacion para agregarlos dentro de la etiqueta de abajo [div] y [label] -->
+                <!-- a cada campo de la tabla o modelo que ya tiene creado el formulario en el archivo-->
+                <!-- forms.py y agregado atributos html tambien en el mismo form.py -->
+                {% for field in form.visible_fields %} <!-- la variable visible_filds obtiene los campos en objetos uno por uno -->
+                    <div class="form-group">
+                        <label for="email">{{ field.label }}</label>
+                        {{ field }}  <!-- vamos insertando cada campo obtenido de la interacion de arriba -->
+                        <!-- OPCION 3 PARA AGREGAR ATRIBUTOS EXTRAS A CADA CAMPO CREADO POR FORM.PY -->
+                        <!-- {{ field|add_class:'form-control'|attr:'autocomplete:off' }}-->
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="card-footer">
+                <button type="submit" class="btn btn-primary btn-flat">
+                    <i class="fas fa-save"></i> Guardar Registro
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Para Obtener Un mensaje PRO de ERROR utilizando SweetAlert2 -->
+    <script>
+
+    <!-- PRIMERA FORMA DE MOSTRAR MENSAJE DE ERROR OBTENIENDO EL ERROR USANDO DJANGO -->
+    {% if form.errors %}  <!-- Si detecta un error entra e intera para hacer lo mismo que el mensaje creado arriba -->
+        var errors = '';
+        {% for field in form %}
+            {% for error in field.errors %}
+                errors+='{{ error }}\n';
+            {% endfor %}
+        {% endfor %}
+
+        // Aqui estamos controlando este tipo de error --> (form.field_errors) interando entre los errores dentro de el
+        {% for error in form.non_field_errors %}
+            errors += '{{ error }}\n';
+        {% endfor %}
+
+        // Mensaje de Error
+        Swal.fire({
+          title: 'Error!',
+          text: errors,
+          icon: 'error'
+        });
+    {% endif %}
+    <!-- /FIN DE LA PRIMERA FORMA USANDO DJANGO -->
+
+    <!-- FUNCION PARA ENVIAR A TRAVÉS DE POST LOS DATOS QUE OBTUVIMOS DENTRO DEL FORM DE ARRIBA CONECTADO CON LA VARIABLE id='form_uno' -->
+    /*$('#form_uno').on('submit', function (e) {
+        e.preventDefault();  <!-- indicamos que de una pausa, osea que no se recarge la pagina o redireccione a otra -->
+        var parameters = $(this).serializeArray();  <!-- guarda todos los datos de cada campo del form en formato diccionario -->
+
+        // SEGUNDO METODO PARA ENVIAR LOS DATOS DEL FORMULARIO DE ARRIBA CON DE AJAX A TRAVÉS DEL POST
+        // DESDE LA URL A LA CLASE CREATE DENTRO DE VIEWS Y PARA REDIRECCIONAR A LA PAGINA list.html
+        $.ajax({
+            // url: '{% url 'erp:category_create' %}',  <!-- llama a la url que es la misma donde esta el boton-->
+            url: window.location.pathname,  // obtener la dirección de la página actual (URL)
+            type: 'POST',  <!-- Tipo Post porque se enviara un dato a traves de la url anterior -->
+            data: parameters,  <!-- Aqui pones el dato que enviaremos -->
+            DataType: 'json'  <!-- Le indicamos el tipo de dato que estamos enviando -->
+        }).done(function (data){ <!-- Esta Funcion o Metodo se va a ejecutar si la peticion es correcta -->
+            <!-- Si no contiene algun mensaje de error la variable data entra en este if y nos regresa a la url indicada -->
+            if(!data.hasOwnProperty('error')){
+                // OBTIENE LA RUTA DE LA VARIABLE list_url QUE LA OBTENEMOS DE views.py DENTRO DE LA CLASE CategoryCreateView
+                // Y SIRVE PARA REDIRECCIONAR A LA PAGINA DE LIST
+                location.href = '{{ list_url }}';
+                return false;
+            }
+
+            // SEGUNDA FORMA PARA MOSTRAR MENSAJE DE ERROR UTILIZANDO AJAX
+            message_error(data.error);  <!-- Mandamos a llamar el archivo functions.js -->
+            // /FIN DE LA LLAMA AL METODO DE LA SEGUNDA FORMA PARA MOSTRAR MENSAJE DE ERROR UTILIZANDO AJAX
+
+        }).fail(function (jqXHR, textStatus, errorThrown){ <!-- Esta Funcion o Metodo se va a ejecutar cuando ocurre un error -->
+            alert(textStatus + ': ' + errorThrown);
+        }).always(function (data) {
+            <!-- alert("complete");-->
+        });
+    });*/
+
+    </script>
+
+{% endblock content %}
+

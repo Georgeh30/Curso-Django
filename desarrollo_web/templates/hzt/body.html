@@ -1,0 +1,40 @@
+{% extends 'home.html' %}
+{% block body %}
+    <body class="hold-transition layout-top-nav">
+    <div class="wrapper">
+        <!-- Header igual a Encabezado -->
+        {% include 'hzt/header.html' %}
+        <!-- Content igual a Contenido osea lo de en medio -->
+        <div class="content-wrapper">
+            <div class="content-header">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h1 class="m-0 text-dark"> Bienvenido <small>Example 3.0</small></h1>
+                        </div>
+                        <div class="col-sm-6">
+                            <ol class="breadcrumb float-sm-right">
+                                <li class="breadcrumb-item"><a href="#">Home</a></li>
+                                <li class="breadcrumb-item"><a href="{{ list_url }}">{{ entity }}</a></li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="content">
+                <div class="container">
+                    {% block content %}
+
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+        <!-- Footer igual a Pie de Pagina osea la parte de hasta abajo -->
+        {% include 'footer.html' %}
+    </div>
+    <!-- Block javascript para modificar este bloque en otro html que herede de este -->
+    {% block javascript %}
+
+    {% endblock javascript %}
+    </body>
+{% endblock %}
